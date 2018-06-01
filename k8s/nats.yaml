@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nats
+  labels:
+    app: nats
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8222
+    targetPort: 8222
+    protocol: TCP
+    name: nats-monitor
+    nodePort: 30301
+  - name: natsport
+    port: 4222
+    targetPort: 4222
+    nodePort: 30302
+  selector:
+    app: nats
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nats
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nats
+    spec:
+      containers:
+      - name: nats
+        image: nats-streaming:0.9.2

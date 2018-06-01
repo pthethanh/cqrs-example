@@ -1,0 +1,43 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: book-query
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: book-query
+    spec:
+      containers:
+      - name: book-query
+        image: 192.168.98.100:5000/book-query:latest
+        env:
+          - name: MYSQL_ADDRESS
+            value: mysql:mysql
+          - name:  MYSQL_DB
+            value: books
+          - name: MYSQL_USER
+            value: root
+          - name: MYSQL_PASSWORD
+            value: password
+          - name: NATS_ADDRESS
+            value: nats:4222
+          - name: HTTP_ADDRESS
+            value: ":8082"
+          - name: ELASTIC_ADDRESS
+            value: http://elasticsearch:9200
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name:  book-query
+spec:
+  selector:
+    app:  book-query
+  type:  LoadBalancer
+  ports:
+  - name: book-query
+    port:  8082
+    targetPort:  8082
+    nodePort: 30306

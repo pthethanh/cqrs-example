@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: elasticsearch
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+      - name: elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch:6.2.3
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name:  elasticsearch
+spec:
+  selector:
+    app:  elasticsearch
+  type:  LoadBalancer
+  ports:
+  - name:  elasticsearch
+    port:  9200
+    targetPort:  9200
+    nodePort: 30303

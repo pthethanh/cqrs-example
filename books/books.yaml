@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: books
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: books
+    spec:
+      containers:
+      - name: books
+        image: 192.168.98.100:5000/books:latest
+        env:
+          - name: MYSQL_ADDRESS
+            value: mysql:3306
+          - name:  MYSQL_DB
+            value: books
+          - name: MYSQL_USER
+            value: root
+          - name: MYSQL_PASSWORD
+            value: password
+          - name: NATS_ADDRESS
+            value: nats:4222
+          - name: HTTP_ADDRESS
+            value: ":8081"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name:  books
+spec:
+  selector:
+    app:  books
+  type:  LoadBalancer
+  ports:
+  - name: books
+    port:  8081
+    targetPort:  8081
+    nodePort: 30305
